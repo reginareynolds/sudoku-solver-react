@@ -117,7 +117,7 @@ export class SeleniumManager {
       // Wait for the puzzle to load
       console.log('Waiting for puzzle board to load...')
       await this.driver.wait(
-        until.elementLocated(By.css('[data-testid="sudoku-board"]')),
+        until.elementLocated(By.css('.su-board')),
         10000
       )
       console.log('Puzzle board loaded successfully')
