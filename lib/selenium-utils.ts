@@ -125,7 +125,72 @@ export class SeleniumManager {
       // Get the puzzle data from the window object
       console.log('Extracting puzzle data...')
       const puzzleData = await this.driver.executeScript<PuzzleData>(`
-        return window.__INITIAL_STATE__.sudoku.puzzleData;
+        // Get all cells in the board
+        const cells = Array.from(document.querySelectorAll('.su-board .su-cell'));
+
+        // Initialize empty puzzle and solution arrays
+        const puzzle = Array(81).fill(null);
+        const solution = Array(81).fill(null);
+
+        // Initialize location variables
+        var number = 0;
+        var row = 0;
+        var col = 0;
+        var box = 0;
+
+        // Process each cell
+        cells.forEach(cell => {
+          // Create a new SudokuCell object
+          var sudokuCell = {
+            id: number,
+            row: row,
+            col: col,
+            box: box,
+            solution: null,
+            possible_solutions: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+          };
+
+          // Get the number from the cell if possible
+          if (cell.classList.contains('prefilled'))
+          {
+            // Store that cell's solution value
+            sudokuCell.solution = parseInt(cell.ariaLabel);
+
+            // Store that cell's solution value as the only possible solution
+            sudokuCell.possible_solutions = [sudokuCell.solution];
+          }
+
+          // Add the SudokuCell object to the puzzle array
+          puzzle[number] = sudokuCell;
+
+          // Increment the location values as necessary
+          if ((col + 1) % 3 === 0)
+          {
+            box++;
+          }
+          if (col < 8)
+          {
+            col++;
+          }
+          else
+          {
+            col = 0;
+            row++;
+
+            if (row % 3 !== 0)
+            {
+              box = box-3;
+            }
+          }
+
+          number++;
+        });
+
+        // Return the puzzle data
+        return {
+          puzzle: puzzle,
+          solution: solution
+        };
       `)
 
       if (!puzzleData || !puzzleData.puzzle || !puzzleData.solution) {
