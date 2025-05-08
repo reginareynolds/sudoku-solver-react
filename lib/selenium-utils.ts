@@ -10,8 +10,14 @@ interface SudokuPuzzle {
 }
 
 interface PuzzleData {
-  puzzle: number[][]
-  solution: number[][]
+
+interface SudokuCell {
+  id: number
+  row: number
+  col: number
+  box: number
+  solution: number|null
+  possible_solutions: number[]
 }
 
 export class SeleniumManager {
